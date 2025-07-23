@@ -1,5 +1,6 @@
 import { FlagIcon, GalleryIcon, ThunderIcon } from "@/components/icons";
 import { AudioBubbleIcon } from "@/features/blocks/bubbles/audio/components/AudioBubbleIcon";
+import { DataBubbleIcon } from "@/features/blocks/bubbles/data/components/DataBubbleIcon";
 import { EmbedBubbleIcon } from "@/features/blocks/bubbles/embed/components/EmbedBubbleIcon";
 import { ImageBubbleIcon } from "@/features/blocks/bubbles/image/components/ImageBubbleIcon";
 import { TextBubbleIcon } from "@/features/blocks/bubbles/textBubble/components/TextBubbleIcon";
@@ -63,6 +64,8 @@ export const BlockIcon = ({ type, ...props }: BlockIconProps): JSX.Element => {
       return <EmbedBubbleIcon color={gray} {...props} />;
     case BubbleBlockType.AUDIO:
       return <AudioBubbleIcon color={gray} {...props} />;
+    case BubbleBlockType.DATA:
+      return <DataBubbleIcon color={gray} {...props} />;
     case InputBlockType.TEXT:
       return <TextInputIcon color={orange} {...props} />;
     case InputBlockType.NUMBER:

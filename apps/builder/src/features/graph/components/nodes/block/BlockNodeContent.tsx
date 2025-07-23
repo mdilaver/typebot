@@ -1,4 +1,5 @@
 import { AudioBubbleNode } from "@/features/blocks/bubbles/audio/components/AudioBubbleNode";
+import { DataBubbleContent } from "@/features/blocks/bubbles/data/components/DataBubbleContent";
 import { EmbedBubbleContent } from "@/features/blocks/bubbles/embed/components/EmbedBubbleContent";
 import { ImageBubbleContent } from "@/features/blocks/bubbles/image/components/ImageBubbleContent";
 import { TextBubbleContent } from "@/features/blocks/bubbles/textBubble/components/TextBubbleContent";
@@ -71,6 +72,9 @@ export const BlockNodeContent = ({
     }
     case BubbleBlockType.AUDIO: {
       return <AudioBubbleNode url={block.content?.url} />;
+    }
+    case BubbleBlockType.DATA: {
+      return <DataBubbleContent block={block} />;
     }
     case InputBlockType.TEXT: {
       return <TextInputNodeContent options={block.options} />;

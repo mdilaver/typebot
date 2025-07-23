@@ -1,4 +1,5 @@
 import { AudioBubbleForm } from "@/features/blocks/bubbles/audio/components/AudioBubbleForm";
+import { DataBubbleForm } from "@/features/blocks/bubbles/data/components/DataBubbleForm";
 import { EmbedUploadContent } from "@/features/blocks/bubbles/embed/components/EmbedUploadContent";
 import { ImageBubbleSettings } from "@/features/blocks/bubbles/image/components/ImageBubbleSettings";
 import { VideoUploadContent } from "@/features/blocks/bubbles/video/components/VideoUploadContent";
@@ -25,16 +26,21 @@ type Props = {
 
 export const MediaBubblePopoverContent = (props: Props) => {
   const ref = useRef<HTMLDivElement | null>(null);
-  const handleMouseDown = (e: React.MouseEvent) => e.stopPropagation();
-
   return (
     <Portal>
-      <PopoverContent
-        onMouseDown={handleMouseDown}
-        w={props.block.type === BubbleBlockType.IMAGE ? "500px" : "400px"}
-      >
+      <PopoverContent onMouseDown={(e) => e.stopPropagation()}>
         <PopoverArrow />
-        <PopoverBody ref={ref} shadow="md">
+        <PopoverBody
+          pt="6"
+          pb="6"
+          px="4"
+          ref={ref}
+          style={{
+            minHeight: "400px",
+            maxHeight: "400px",
+            overflow: "auto",
+          }}
+        >
           <MediaBubbleContent {...props} />
         </PopoverBody>
       </PopoverContent>
@@ -81,6 +87,9 @@ export const MediaBubbleContent = ({
           onContentChange={onContentChange}
         />
       );
+    }
+    case BubbleBlockType.DATA: {
+      return <DataBubbleForm block={block} onContentChange={onContentChange} />;
     }
   }
 };
