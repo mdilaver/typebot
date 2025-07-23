@@ -48,7 +48,7 @@ const nextConfig = {
   output: "standalone",
   i18n: {
     defaultLocale: "en",
-    locales: ["en", "fr", "pt", "pt-BR", "de", "ro", "es", "it", "el"],
+    locales: ["en", "fr", "pt", "pt-BR", "de", "ro", "es", "it", "el", "tr"],
   },
   serverExternalPackages: ["isolated-vm"],
   outputFileTracingRoot: join(__dirname, "../../"),

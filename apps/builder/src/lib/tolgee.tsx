@@ -10,6 +10,7 @@ import it from "../i18n/it.json";
 import ptBR from "../i18n/pt-BR.json";
 import pt from "../i18n/pt.json";
 import ro from "../i18n/ro.json";
+import tr from "../i18n/tr.json";
 
 export const tolgee = Tolgee()
   .use(FormatIcu())
@@ -27,6 +28,7 @@ export const tolgee = Tolgee()
       "ro",
       "it",
       "el",
+      "tr",
     ],
     fallbackLanguage: "en",
     staticData: {
@@ -39,5 +41,6 @@ export const tolgee = Tolgee()
       ro,
       it,
       el,
+      tr,
     },
   });
