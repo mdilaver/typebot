@@ -309,6 +309,9 @@ export const continueBotFlow = async (
       visitedEdges: executionResponse.visitedEdges.concat(
         resumeContinueFlowResponse.visitedEdges ?? [],
       ),
+      customData: executionResponse.customData.concat(
+        resumeContinueFlowResponse.customData ?? [],
+      ),
     };
   }
 
@@ -321,6 +324,7 @@ export const continueBotFlow = async (
     visitedEdges: executionResponse.visitedEdges,
     setVariableHistory: executionResponse.setVariableHistory,
     lastMessageNewFormat,
+    customData: executionResponse.customData,
   };
 };
 

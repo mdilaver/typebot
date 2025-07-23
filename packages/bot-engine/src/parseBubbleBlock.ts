@@ -97,6 +97,17 @@ export const parseBubbleBlock = (
         },
       };
     }
+    case BubbleBlockType.DATA: {
+      // Data bubble doesn't render anything visible
+      // It only sets variables in the background
+      return {
+        ...block,
+        content: {
+          type: "data",
+          variables: block.content?.variables || [],
+        },
+      };
+    }
     default:
       return deepParseVariables(block, {
         variables,

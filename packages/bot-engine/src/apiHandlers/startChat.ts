@@ -48,6 +48,7 @@ export const startChat = async ({
     newSessionState,
     visitedEdges,
     setVariableHistory,
+    customData,
   } = await startSession({
     version: 2,
     sessionStore,
@@ -124,5 +125,6 @@ export const startChat = async ({
             currentInputBlockId: input?.id,
           })
       : undefined,
+    customData,
   };
 };

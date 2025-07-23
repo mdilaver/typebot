@@ -200,6 +200,7 @@ export const startSession = async ({
     logs,
     visitedEdges,
     setVariableHistory,
+    customData,
   } = await startBotFlow({
     version,
     sessionStore,
@@ -265,6 +266,7 @@ export const startSession = async ({
       logs: startLogs.length > 0 ? startLogs : undefined,
       visitedEdges,
       setVariableHistory,
+      customData,
     };
 
   return {
@@ -291,6 +293,7 @@ export const startSession = async ({
     logs: startLogs.length > 0 ? startLogs : undefined,
     visitedEdges,
     setVariableHistory,
+    customData,
   };
 };
 

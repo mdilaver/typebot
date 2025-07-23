@@ -63,6 +63,7 @@ export const continueChat = async ({
     lastMessageNewFormat,
     visitedEdges,
     setVariableHistory,
+    customData,
   } = await continueBotFlow(message, {
     version: 2,
     state: session.state,
@@ -122,5 +123,6 @@ export const continueChat = async ({
             currentInputBlockId: input?.id,
           })
       : undefined,
+    customData,
   };
 };

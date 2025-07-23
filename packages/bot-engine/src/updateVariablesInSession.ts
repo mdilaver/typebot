@@ -80,18 +80,17 @@ const updateTypebotVariables = ({
   let setVariableHistoryIndex = state.currentSetVariableHistoryIndex ?? 0;
   const setVariableHistory: SetVariableHistoryItem[] = [];
   if (currentBlockId) {
-    serializedNewVariables
-      .filter((v) => state.setVariableIdsForHistory?.includes(v.id))
-      .forEach((newVariable) => {
-        setVariableHistory.push({
-          resultId: state.typebotsQueue[0]!.resultId as string,
-          index: setVariableHistoryIndex,
-          blockId: currentBlockId,
-          variableId: newVariable.id,
-          value: newVariable.value,
-        });
-        setVariableHistoryIndex += 1;
+    // Include all variables for customData (not just setVariableIdsForHistory)
+    serializedNewVariables.forEach((newVariable) => {
+      setVariableHistory.push({
+        resultId: state.typebotsQueue[0]!.resultId as string,
+        index: setVariableHistoryIndex,
+        blockId: currentBlockId,
+        variableId: newVariable.id,
+        value: newVariable.value,
       });
+      setVariableHistoryIndex += 1;
+    });
   }
 
   return {

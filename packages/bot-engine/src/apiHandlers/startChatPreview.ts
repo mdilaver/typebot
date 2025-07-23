@@ -51,6 +51,7 @@ export const startChatPreview = async ({
     newSessionState,
     visitedEdges,
     setVariableHistory,
+    customData,
   } = await startSession({
     version: 2,
     sessionStore,
@@ -122,5 +123,6 @@ export const startChatPreview = async ({
             currentInputBlockId: input?.id,
           })
       : undefined,
+    customData,
   };
 };

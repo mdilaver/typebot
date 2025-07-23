@@ -1,5 +1,6 @@
 import { audioBubbleContentSchema } from "@typebot.io/blocks-bubbles/audio/schema";
 import { BubbleBlockType } from "@typebot.io/blocks-bubbles/constants";
+import { dataBubbleContentSchema } from "@typebot.io/blocks-bubbles/data/schema";
 import { embedBubbleContentSchema } from "@typebot.io/blocks-bubbles/embed/schema";
 import { imageBubbleContentSchema } from "@typebot.io/blocks-bubbles/image/schema";
 import { videoBubbleContentSchema } from "@typebot.io/blocks-bubbles/video/schema";
@@ -143,6 +144,16 @@ const embedBubbleSchema = z
     ref: "embedBubble",
   });
 
+const dataBubbleSchema = z
+  .object({
+    type: z.enum([BubbleBlockType.DATA]),
+    content: dataBubbleContentSchema,
+  })
+  .openapi({
+    title: "Data",
+    ref: "dataBubble",
+  });
+
 const displayEmbedBubbleSchema = z.object({
   url: z.string().optional(),
   waitForEventFunction: z
@@ -176,6 +187,7 @@ export const chatBubbleSchema = z
       videoBubbleSchema,
       audioBubbleSchema,
       embedBubbleSchema,
+      dataBubbleSchema,
       customBubbleSchema,
     ]),
   );
@@ -371,6 +383,12 @@ const chatResponseBaseSchema = z.object({
     .optional()
     .describe(
       "If progress bar is enabled, this field will return a number between 0 and 100 indicating the current progress based on the longest remaining path of the flow.",
+    ),
+  customData: z
+    .record(z.unknown())
+    .optional()
+    .describe(
+      "Custom data returned from data bubbles. Contains variable values that were set in data bubbles during flow execution.",
     ),
 });
 

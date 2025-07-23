@@ -1,6 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import { TRPCError } from "@trpc/server";
 import { BubbleBlockType } from "@typebot.io/blocks-bubbles/constants";
+import type { DataBubbleBlock } from "@typebot.io/blocks-bubbles/data/schema";
 import {
   isBubbleBlock,
   isInputBlock,
@@ -17,6 +18,7 @@ import type { Group } from "@typebot.io/groups/schemas";
 import { byId, isDefined, isNotDefined } from "@typebot.io/lib/utils";
 import type { Prisma } from "@typebot.io/prisma/types";
 import type { SessionStore } from "@typebot.io/runtime-session-store";
+import { parseVariables } from "@typebot.io/variables/parseVariables";
 import type {
   SetVariableHistoryItem,
   VariableWithValue,
@@ -30,6 +32,7 @@ import {
 } from "./parseBubbleBlock";
 import { upsertResult } from "./queries/upsertResult";
 import type { ExecuteIntegrationResponse, ExecuteLogicResponse } from "./types";
+import { updateVariablesInSession } from "./updateVariablesInSession";
 
 export type WalkFlowStartingPoint =
   | { type: "group"; group: Group }
@@ -124,14 +127,22 @@ export const walkFlowForward = async (
         newSessionState.typebotsQueue.length > 1))
   );
 
-  return {
+  // Extract customData from variables set by data bubbles in this execution
+  const customData = extractCustomDataFromExecution(
+    setVariableHistory,
     newSessionState,
-    logs,
+  );
+
+  return {
     messages,
     input,
-    clientSideActions,
+    clientSideActions:
+      clientSideActions.length > 0 ? clientSideActions : undefined,
+    newSessionState,
+    logs: logs.length > 0 ? logs : undefined,
     visitedEdges,
     setVariableHistory,
+    customData: Object.keys(customData).length > 0 ? customData : undefined,
   };
 };
 
@@ -215,6 +226,110 @@ const executeGroup = async (
 
     if (isBubbleBlock(block)) {
       if (!block.content || (skipFirstMessageBubble && index === 0)) continue;
+
+      // Handle data bubble variable setting
+      if (block.type === BubbleBlockType.DATA) {
+        const dataBubble = block as DataBubbleBlock;
+        if (dataBubble.content?.variables) {
+          const variablesToUpdate =
+            dataBubble.content.variables
+              ?.map((dataVar) => {
+                const mode = dataVar.mode || "variable";
+
+                if (mode === "variable") {
+                  // Variable mode - existing logic
+                  if (!dataVar.variableId) return null;
+
+                  const existingVariable =
+                    newSessionState.typebotsQueue[0].typebot.variables.find(
+                      (v) => v.id === dataVar.variableId,
+                    );
+
+                  if (!existingVariable) return null;
+
+                  // If no custom value is set, use current variable value
+                  if (!dataVar.value || dataVar.value.trim() === "") {
+                    return {
+                      ...existingVariable,
+                      value: existingVariable.value,
+                    };
+                  }
+
+                  // Clean value: if it's wrapped in quotes from frontend, unwrap it
+                  let cleanValue = dataVar.value;
+                  if (
+                    cleanValue.startsWith('"') &&
+                    cleanValue.endsWith('"') &&
+                    cleanValue.length > 2
+                  ) {
+                    cleanValue = cleanValue.slice(1, -1);
+                  }
+
+                  // Parse the value with variables
+                  const parsedValue = parseVariables(cleanValue, {
+                    variables:
+                      newSessionState.typebotsQueue[0].typebot.variables,
+                    sessionStore,
+                  });
+
+                  return {
+                    ...existingVariable,
+                    value: parsedValue,
+                  };
+                } else if (mode === "custom") {
+                  // Custom field mode - create temporary variable for tracking
+                  if (
+                    !dataVar.customKey ||
+                    !dataVar.value ||
+                    dataVar.value.trim() === ""
+                  )
+                    return null;
+
+                  // Clean value: if it's wrapped in quotes from frontend, unwrap it
+                  let cleanValue = dataVar.value;
+                  if (
+                    cleanValue.startsWith('"') &&
+                    cleanValue.endsWith('"') &&
+                    cleanValue.length > 2
+                  ) {
+                    cleanValue = cleanValue.slice(1, -1);
+                  }
+
+                  // Parse the value with variables
+                  const parsedValue = parseVariables(cleanValue, {
+                    variables:
+                      newSessionState.typebotsQueue[0].typebot.variables,
+                    sessionStore,
+                  });
+
+                  // Create a temporary variable for custom field tracking
+                  return {
+                    id: `__custom_field_${dataVar.customKey}_${block.id}`,
+                    name: dataVar.customKey,
+                    value: parsedValue,
+                    isCustomField: true, // Mark as custom field
+                  };
+                }
+
+                return null;
+              })
+              .filter(isDefined) || [];
+
+          if (variablesToUpdate.length > 0) {
+            const { newSetVariableHistory, updatedState } =
+              updateVariablesInSession({
+                state: newSessionState,
+                newVariables: variablesToUpdate,
+                currentBlockId: block.id,
+              });
+            newSessionState = updatedState;
+            newSetVariableHistoryItems.push(...newSetVariableHistory);
+          }
+        }
+        // Data bubbles don't produce visible messages, so continue to next block
+        continue;
+      }
+
       const message = parseBubbleBlock(block as BubbleBlockWithDefinedContent, {
         version,
         variables: newSessionState.typebotsQueue[0].typebot.variables,
@@ -549,4 +664,60 @@ const popQueuedEdge = (
       ],
     },
   };
+};
+
+const extractCustomDataFromExecution = (
+  setVariableHistory: SetVariableHistoryItem[],
+  state: SessionState,
+): Record<string, any> => {
+  const customData: Record<string, any> = {};
+
+  // Get all data bubble blocks and their selected variables
+  const allBlocks =
+    state.typebotsQueue[0]?.typebot.groups.flatMap(
+      (group) => group.blocks as any[],
+    ) || [];
+  const dataBubbles = allBlocks.filter(
+    (block: any) => block.type === BubbleBlockType.DATA,
+  );
+
+  // Collect all variables/custom fields that should be included in customData
+  const selectedVariableIds = new Set<string>();
+  const customFieldKeys = new Set<string>();
+
+  dataBubbles.forEach((bubble: any) => {
+    if (bubble.content?.variables) {
+      bubble.content.variables.forEach((variable: any) => {
+        if (variable.mode === "custom" && variable.customKey) {
+          // Custom field mode
+          customFieldKeys.add(variable.customKey);
+        } else if (variable.variableId) {
+          // Existing variable mode
+          selectedVariableIds.add(variable.variableId);
+        }
+      });
+    }
+  });
+
+  // Only include variables that were selected in data bubbles
+  const variables = state.typebotsQueue[0]?.typebot.variables || [];
+  setVariableHistory.forEach((change) => {
+    // Include if it's a selected variable
+    if (selectedVariableIds.has(change.variableId)) {
+      const variable = variables.find((v) => v.id === change.variableId);
+      if (variable) {
+        customData[variable.name] = change.value;
+      }
+    }
+
+    // Include custom fields from data bubbles
+    if (change.variableId.startsWith("__custom_field_")) {
+      const keyMatch = change.variableId.match(/__custom_field_(.+)_/);
+      if (keyMatch && keyMatch[1] && customFieldKeys.has(keyMatch[1])) {
+        customData[keyMatch[1]] = change.value;
+      }
+    }
+  });
+
+  return customData;
 };

@@ -1,5 +1,6 @@
 import { z } from "@typebot.io/zod";
 import { audioBubbleBlockSchema } from "./audio/schema";
+import { dataBubbleBlockSchema } from "./data/schema";
 import { embedBubbleBlockSchema } from "./embed/schema";
 import { imageBubbleBlockSchema } from "./image/schema";
 import { textBubbleBlockSchema } from "./text/schema";
@@ -11,6 +12,7 @@ export const bubbleBlockSchema = z.discriminatedUnion("type", [
   videoBubbleBlockSchema,
   embedBubbleBlockSchema,
   audioBubbleBlockSchema,
+  dataBubbleBlockSchema,
 ]);
 export type BubbleBlock = z.infer<typeof bubbleBlockSchema>;
 
