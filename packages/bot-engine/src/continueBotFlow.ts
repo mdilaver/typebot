@@ -297,19 +297,19 @@ export const continueBotFlow = async (
       messages: executionResponse.messages.concat(
         resumeContinueFlowResponse.messages,
       ),
-      clientSideActions: executionResponse.clientSideActions.concat(
+      clientSideActions: (executionResponse.clientSideActions ?? []).concat(
         resumeContinueFlowResponse.clientSideActions ?? [],
       ),
-      logs: executionResponse.logs.concat(
+      logs: (executionResponse.logs ?? []).concat(
         resumeContinueFlowResponse.logs ?? [],
       ),
-      setVariableHistory: executionResponse.setVariableHistory.concat(
+      setVariableHistory: (executionResponse.setVariableHistory ?? []).concat(
         resumeContinueFlowResponse.setVariableHistory ?? [],
       ),
-      visitedEdges: executionResponse.visitedEdges.concat(
+      visitedEdges: (executionResponse.visitedEdges ?? []).concat(
         resumeContinueFlowResponse.visitedEdges ?? [],
       ),
-      customData: executionResponse.customData.concat(
+      customData: (executionResponse.customData ?? []).concat(
         resumeContinueFlowResponse.customData ?? [],
       ),
     };
