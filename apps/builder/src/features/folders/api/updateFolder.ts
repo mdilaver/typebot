@@ -24,7 +24,6 @@ export const updateFolder = authenticatedProcedure
         .pick({
           name: true,
           parentFolderId: true,
-          initialDataMappings: true,
         })
         .partial(),
     }),
@@ -60,7 +59,6 @@ export const updateFolder = authenticatedProcedure
         data: {
           name: folder.name,
           parentFolderId: folder.parentFolderId,
-          initialDataMappings: folder.initialDataMappings,
         },
       });
 
