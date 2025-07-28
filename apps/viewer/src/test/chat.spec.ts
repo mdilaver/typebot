@@ -328,4 +328,32 @@ test("API chat execution should work on published bot", async ({ request }) => {
       "Welcome. What's your name?",
     );
   });
+
+  await test.step("Initial data should be available as variables", async () => {
+    const { messages, customData } = await (
+      await request.post(`/api/v1/typebots/${typebotId}/preview/startChat`, {
+        data: {
+          isOnlyRegistering: false,
+          isStreamEnabled: false,
+          textBubbleContentFormat: "richText",
+          initialData: {
+            campaign_id: "summer_2024",
+            user_segment: "premium",
+            source: "email_marketing",
+          },
+        } satisfies Omit<StartPreviewChatInput, "typebotId">,
+      })
+    ).json();
+
+    // Custom data should be available in the response
+    expect(customData).toBeDefined();
+
+    // Messages should still be correct
+    expect(messages[0].content.richText).toStrictEqual([
+      { children: [{ text: "Hi there! 👋" }], type: "p" },
+    ]);
+    expect(messages[1].content.richText).toStrictEqual([
+      { children: [{ text: "Welcome. What's your name?" }], type: "p" },
+    ]);
+  });
 });

@@ -20,6 +20,7 @@ type Props = {
   publicId: string;
   isStreamEnabled: boolean;
   prefilledVariables?: Record<string, unknown>;
+  initialData?: Record<string, unknown>;
   resultId?: string;
   textBubbleContentFormat: "richText" | "markdown";
 };
@@ -32,6 +33,7 @@ export const startChat = async ({
   publicId,
   isStreamEnabled,
   prefilledVariables,
+  initialData,
   resultId: startResultId,
   textBubbleContentFormat,
 }: Props) => {
@@ -48,7 +50,7 @@ export const startChat = async ({
     newSessionState,
     visitedEdges,
     setVariableHistory,
-    customData,
+    customData: sessionCustomData,
   } = await startSession({
     version: 2,
     sessionStore,
@@ -58,6 +60,7 @@ export const startChat = async ({
       isStreamEnabled,
       publicId,
       prefilledVariables,
+      initialData,
       resultId: startResultId,
       textBubbleContentFormat,
       message,
@@ -125,6 +128,6 @@ export const startChat = async ({
             currentInputBlockId: input?.id,
           })
       : undefined,
-    customData,
+    customData: sessionCustomData,
   };
 };

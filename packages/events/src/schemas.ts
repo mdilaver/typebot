@@ -12,6 +12,20 @@ const eventBaseSchema = z.object({
 
 export const startEventSchema = eventBaseSchema.extend({
   type: z.literal(EventType.START),
+  options: z
+    .object({
+      initialDataMappings: z
+        .array(
+          z.object({
+            dataKey: z.string(),
+            variableId: z.string().optional(),
+            createNewVariable: z.boolean().optional(),
+            newVariableName: z.string().optional(),
+          }),
+        )
+        .optional(),
+    })
+    .optional(),
 });
 export type StartEvent = z.infer<typeof startEventSchema>;
 

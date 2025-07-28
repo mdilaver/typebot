@@ -94,11 +94,19 @@ export const startSession = async ({
     ? prefillVariables(typebot.variables, startParams.prefilledVariables)
     : typebot.variables;
 
+  // Process initial data into variables based on start event configuration
+  const initialDataVariables = processInitialDataIntoVariables(
+    startParams.initialData,
+    typebot.variables,
+    typebot.events?.find((e) => e.type === "start")?.options
+      ?.initialDataMappings,
+  );
+
   const result = await getResult({
     resultId: startParams.type === "live" ? startParams.resultId : undefined,
     isPreview: startParams.type === "preview",
     typebotId: typebot.id,
-    prefilledVariables,
+    prefilledVariables: [...prefilledVariables, ...initialDataVariables],
     isRememberUserEnabled:
       typebot.settings.general?.rememberUser?.isEnabled ??
       (isDefined(typebot.settings.general?.isNewResultOnRefreshEnabled)
@@ -108,8 +116,11 @@ export const startSession = async ({
 
   const startVariables =
     result && result.variables.length > 0
-      ? injectVariablesFromExistingResult(prefilledVariables, result.variables)
-      : prefilledVariables;
+      ? injectVariablesFromExistingResult(
+          [...prefilledVariables, ...initialDataVariables],
+          result.variables,
+        )
+      : [...prefilledVariables, ...initialDataVariables];
 
   const typebotInSession = convertStartTypebotToTypebotInSession(
     typebot,
@@ -257,7 +268,7 @@ export const startSession = async ({
           sessionStore,
         }),
         theme: sanitizeAndParseTheme(typebot.theme, {
-          variables: initialState.typebotsQueue[0].typebot.variables,
+          variables: initialState.typebotsQueue[0]?.typebot.variables,
           sessionStore,
         }),
         publishedAt: typebot.updatedAt,
@@ -401,6 +412,58 @@ const getResult = async ({
     variables: updatedResult.variables,
     answers: existingResult?.answers ?? [],
   };
+};
+
+const processInitialDataIntoVariables = (
+  initialData: Record<string, unknown> | undefined,
+  existingVariables: Variable[],
+  initialDataMappings:
+    | Array<{
+        dataKey: string;
+        variableId?: string;
+        createNewVariable?: boolean;
+        newVariableName?: string;
+      }>
+    | undefined,
+): Variable[] => {
+  if (!initialData || !initialDataMappings || initialDataMappings.length === 0)
+    return [];
+
+  const initialDataVariables: Variable[] = [];
+
+  // Only use mappings, no automatic mapping
+  for (const mapping of initialDataMappings) {
+    const value = initialData[mapping.dataKey];
+    if (!isDefined(value) || !mapping.dataKey) continue;
+
+    // Convert value to appropriate variable value type
+    const variableValue = Array.isArray(value)
+      ? value.map((v) => v?.toString() ?? null)
+      : (value?.toString() ?? null);
+
+    if (mapping.createNewVariable && mapping.newVariableName) {
+      // Create new variable
+      initialDataVariables.push({
+        id: createId(),
+        name: mapping.newVariableName,
+        value: variableValue,
+      });
+    } else if (mapping.variableId) {
+      // Use existing variable
+      const existingVariable = existingVariables.find(
+        (variable) => variable.id === mapping.variableId,
+      );
+      if (existingVariable) {
+        initialDataVariables.push({
+          id: existingVariable.id,
+          name: existingVariable.name,
+          value: variableValue,
+        });
+      }
+    }
+  }
+
+  return initialDataVariables;
 };
 
 const parseDynamicThemeInState = (theme: Theme) => {

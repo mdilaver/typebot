@@ -21,6 +21,7 @@ type Props = {
   startFrom?: StartFrom;
   isPreview: boolean;
   prefilledVariables?: Record<string, unknown>;
+  initialData?: Record<string, unknown>;
   resultId?: string;
   sessionId?: string;
 };
@@ -30,6 +31,7 @@ export async function startChatQuery({
   isPreview,
   apiHost,
   prefilledVariables,
+  initialData,
   resultId,
   stripeRedirectStatus,
   startFrom,
@@ -61,6 +63,7 @@ export async function startChatQuery({
       startFrom,
       typebot,
       prefilledVariables,
+      initialData,
       sessionId,
     });
   }
@@ -79,6 +82,7 @@ export async function startChatQuery({
         json: {
           isStreamEnabled: true,
           prefilledVariables,
+          initialData,
           resultId,
           isOnlyRegistering: false,
         } satisfies Omit<
@@ -141,6 +145,7 @@ const startPreviewChat = async ({
   startFrom,
   typebot,
   prefilledVariables,
+  initialData,
   sessionId,
 }: {
   apiHost?: string;
@@ -148,6 +153,7 @@ const startPreviewChat = async ({
   startFrom?: StartFrom;
   typebot: StartPreviewChatInput["typebot"];
   prefilledVariables?: Record<string, unknown>;
+  initialData?: Record<string, unknown>;
   sessionId?: string;
 }) => {
   try {
@@ -160,6 +166,7 @@ const startPreviewChat = async ({
             startFrom,
             typebot,
             prefilledVariables,
+            initialData,
             sessionId,
           } satisfies Omit<
             StartPreviewChatInput,

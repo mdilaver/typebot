@@ -257,5 +257,22 @@
   "workspace.settings.modal.menu.settings.label": "Configuración",
   "workspace.settings.modal.menu.version.label": "Versión: {version}",
   "workspace.settings.modal.menu.workspace.label": "Espacio de trabajo",
-  "workspace.settings.name.label": "Nombre:"
+  "workspace.settings.name.label": "Nombre:",
+  "blocks.events.start.eventCard.tooltip": "Ya añadido en el flujo del bot.",
+  "blocks.events.start.node.label": "Inicio",
+  "blocks.events.start.mappingBadge": "mapeo",
+  "blocks.events.start.mappingBadge.plural": "mapeos",
+  "blocks.events.start.settings.title": "Datos Iniciales",
+  "blocks.events.start.settings.description": "Mapear datos API a variables",
+  "blocks.events.start.settings.mapping.apiKey": "Clave API",
+  "blocks.events.start.settings.mapping.variable": "Variable",
+  "blocks.events.start.settings.mapping.number": "#{number}",
+  "blocks.events.start.settings.mapping.delete": "Eliminar",
+  "blocks.events.start.settings.mapping.newVariable": "Nueva variable",
+  "blocks.events.start.settings.mapping.existingVariable": "Variable existente",
+  "blocks.events.start.settings.mapping.addNew": "Añadir nuevo mapeo",
+  "blocks.events.start.settings.mapping.placeholder.apiKey": "clientId",
+  "blocks.events.start.settings.mapping.placeholder.newVariable": "Nueva variable",
+  "blocks.events.start.settings.mapping.configured": "💡 {count} mapeo configurado",
+  "blocks.events.command.node.label": "Comando"
 }

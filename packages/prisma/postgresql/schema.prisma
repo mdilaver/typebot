@@ -171,16 +171,17 @@ model VerificationToken {
 }
 
 model DashboardFolder {
-  id             String            @id @default(cuid())
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @default(now()) @updatedAt
-  name           String
-  parentFolderId String?
-  workspaceId    String
-  parentFolder   DashboardFolder?  @relation("ParentChild", fields: [parentFolderId], references: [id])
-  workspace      Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  childrenFolder DashboardFolder[] @relation("ParentChild")
-  typebots       Typebot[]
+  id                  String            @id @default(cuid())
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @default(now()) @updatedAt
+  name                String
+  parentFolderId      String?
+  workspaceId         String
+  initialDataMappings Json?
+  parentFolder        DashboardFolder?  @relation("ParentChild", fields: [parentFolderId], references: [id])
+  workspace           Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  childrenFolder      DashboardFolder[] @relation("ParentChild")
+  typebots            Typebot[]
 }
 
 model Typebot {

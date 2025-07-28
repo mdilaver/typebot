@@ -267,6 +267,19 @@ const commonStartChatInputSchema = z.object({
         Email: "john@gmail.com",
       },
     }),
+  initialData: z
+    .record(z.unknown())
+    .optional()
+    .describe(
+      "Initial data that will be mapped to variables according to start event configuration. Only mapped data will be set as variables.",
+    )
+    .openapi({
+      example: {
+        campaign_id: "summer_2024",
+        user_segment: "premium",
+        source: "email_marketing",
+      },
+    }),
   textBubbleContentFormat: z.enum(["richText", "markdown"]).default("richText"),
   startFrom: startFromSchema.optional(),
 });

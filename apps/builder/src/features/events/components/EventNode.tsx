@@ -8,6 +8,7 @@ import { useGraph } from "@/features/graph/providers/GraphProvider";
 import { setMultipleRefs } from "@/helpers/setMultipleRefs";
 import { useRightPanel } from "@/hooks/useRightPanel";
 import {
+  Box,
   Popover,
   PopoverTrigger,
   SlideFade,
@@ -179,6 +180,30 @@ export const EventNode = ({ event, eventIndex }: Props) => {
               pointerEvents={isDraggingGraph ? "none" : "auto"}
             >
               <EventNodeContent event={event} />
+              {/* Mapping indicator badge for start event */}
+              {event.type === EventType.START &&
+                event.options?.initialDataMappings &&
+                event.options.initialDataMappings.length > 0 && (
+                  <Box
+                    position="absolute"
+                    top="-6px"
+                    right="-6px"
+                    bg="blue.500"
+                    color="white"
+                    borderRadius="full"
+                    minW="18px"
+                    h="18px"
+                    fontSize="10px"
+                    fontWeight="bold"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    border="2px solid white"
+                    zIndex={2}
+                  >
+                    {event.options.initialDataMappings.length}
+                  </Box>
+                )}
               <EventSourceEndpoint
                 source={{
                   eventId: event.id,
@@ -224,5 +249,4 @@ export const EventNode = ({ event, eventIndex }: Props) => {
   );
 };
 
-const hasSettingsPopover = (event: TEvent): event is TEventWithOptions =>
-  event.type !== EventType.START;
+const hasSettingsPopover = (event: TEvent): event is TEventWithOptions => true; // All events can now have settings

@@ -59,6 +59,7 @@ export type BotProps = {
   isPreview?: boolean;
   resultId?: string;
   prefilledVariables?: Record<string, unknown>;
+  initialData?: Record<string, unknown>;
   apiHost?: string;
   wsHost?: string;
   font?: Font;
@@ -107,6 +108,7 @@ export const Bot = (props: BotProps & { class?: string }) => {
         ...prefilledVariables,
         ...props.prefilledVariables,
       },
+      initialData: props.initialData,
       startFrom: props.startFrom,
       sessionId: props.sessionId,
     });

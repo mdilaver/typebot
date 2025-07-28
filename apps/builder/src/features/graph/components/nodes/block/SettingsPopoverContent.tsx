@@ -32,6 +32,7 @@ import { WebhookSettings } from "@/features/blocks/logic/webhook/components/Webh
 import { CommandEventSettings } from "@/features/events/components/CommandEventSettings";
 import { InvalidReplyEventSettings } from "@/features/events/components/InvalidReplyEventSettings";
 import { ReplyEventSettings } from "@/features/events/components/ReplyEventSettings";
+import { StartEventSettings } from "@/features/events/components/StartEventSettings";
 import { useForgedBlock } from "@/features/forge/hooks/useForgedBlock";
 import { VideoOnboardingPopover } from "@/features/onboarding/components/VideoOnboardingPopover";
 import { hasOnboardingVideo } from "@/features/onboarding/helpers/hasOnboardingVideo";
@@ -92,7 +93,13 @@ export const SettingsPopoverContent = ({ isOpen, ...props }: Props) => {
       <PopoverContent
         onMouseDown={handleMouseDown}
         pos="relative"
-        w={isExpanded ? "650px" : undefined}
+        w={
+          isExpanded
+            ? "650px"
+            : props.node.type === EventType.START
+              ? "420px"
+              : undefined
+        }
         maxH={isExpanded ? "70vh" : "400px"}
         h="full"
       >
@@ -156,6 +163,13 @@ export const NodeSettings = ({
   };
 
   switch (node.type) {
+    case EventType.START:
+      return (
+        <StartEventSettings
+          options={node.options}
+          onOptionsChange={updateOptions}
+        />
+      );
     case InputBlockType.TEXT: {
       return (
         <TextInputSettings

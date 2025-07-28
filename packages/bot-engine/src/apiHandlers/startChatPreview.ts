@@ -23,6 +23,7 @@ type Props = {
   typebot?: StartTypebot;
   userId?: string;
   prefilledVariables?: Record<string, unknown>;
+  initialData?: Record<string, unknown>;
   sessionId?: string;
   textBubbleContentFormat: "richText" | "markdown";
 };
@@ -36,6 +37,7 @@ export const startChatPreview = async ({
   typebot: startTypebot,
   userId,
   prefilledVariables,
+  initialData,
   sessionId: sessionIdProp,
   textBubbleContentFormat,
 }: Props) => {
@@ -51,7 +53,7 @@ export const startChatPreview = async ({
     newSessionState,
     visitedEdges,
     setVariableHistory,
-    customData,
+    customData: sessionCustomData,
   } = await startSession({
     version: 2,
     sessionStore,
@@ -64,6 +66,7 @@ export const startChatPreview = async ({
       typebot: startTypebot,
       userId,
       prefilledVariables,
+      initialData,
       textBubbleContentFormat,
       message,
     },
@@ -123,6 +126,6 @@ export const startChatPreview = async ({
             currentInputBlockId: input?.id,
           })
       : undefined,
-    customData,
+    customData: sessionCustomData,
   };
 };
