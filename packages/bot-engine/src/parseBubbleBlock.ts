@@ -103,7 +103,6 @@ export const parseBubbleBlock = (
       return {
         ...block,
         content: {
-          type: "data",
           variables: block.content?.variables || [],
         },
       };

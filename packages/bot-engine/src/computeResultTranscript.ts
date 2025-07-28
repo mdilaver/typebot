@@ -424,6 +424,12 @@ const convertChatMessageToTranscriptMessage = (
     case BubbleBlockType.EMBED: {
       return null;
     }
+    case BubbleBlockType.DATA: {
+      // Data bubble doesn't appear in transcript
+      return null;
+    }
+    default:
+      return null;
   }
 };
 

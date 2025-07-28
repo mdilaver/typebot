@@ -94,6 +94,12 @@ export const convertMessageToWhatsAppMessage = (
         },
       };
     }
+    case BubbleBlockType.DATA: {
+      // Data bubble doesn't send WhatsApp message
+      return null;
+    }
+    default:
+      return null;
   }
 };
 
