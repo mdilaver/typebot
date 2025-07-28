@@ -147,6 +147,7 @@
   "blocks.events.start.settings.mapping.placeholder.apiKey": "clientId",
   "blocks.events.start.settings.mapping.placeholder.newVariable": "New variable",
   "blocks.events.start.settings.mapping.configured": "💡 {count} mapping configured",
+  "blocks.events.start.variables.configured": "{count} variables configured",
   "blocks.inputs.internalValue.label": "Internal value:",
   "blocks.inputs.button.addItem.ariaLabel": "Add item",
   "blocks.inputs.button.buttonSettings.addComparisonButton.label": "Add comparison",

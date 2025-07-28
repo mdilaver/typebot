@@ -133,6 +133,7 @@
   "blocks.events.start.settings.mapping.placeholder.apiKey": "clientId",
   "blocks.events.start.settings.mapping.placeholder.newVariable": "Nouvelle variable",
   "blocks.events.start.settings.mapping.configured": "💡 {count} mappage configuré",
+  "blocks.events.start.variables.configured": "{count} variables configurées",
   "blocks.events.command.node.label": "Commande",
   "blocks.inputs.button.addItem.ariaLabel": "Ajouter un item",
   "blocks.inputs.button.buttonSettings.addComparisonButton.label": "Ajouter une comparaison",

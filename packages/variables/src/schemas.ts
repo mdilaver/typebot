@@ -13,10 +13,6 @@ const baseVariableSchema = z.object({
 
 export const variableSchema = baseVariableSchema.extend({
   value: z.string().or(listVariableValue).nullish(),
-  inheritedFromFolderId: z.string().optional(),
-  isRequired: z.boolean().optional(),
-  description: z.string().optional(),
-  type: z.enum(["text", "number", "boolean"]).optional().default("text"),
 });
 
 export type Variable = z.infer<typeof variableSchema>;

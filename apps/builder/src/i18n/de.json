@@ -269,5 +269,6 @@
   "blocks.events.start.settings.mapping.placeholder.apiKey": "clientId",
   "blocks.events.start.settings.mapping.placeholder.newVariable": "Neue Variable",
   "blocks.events.start.settings.mapping.configured": "💡 {count} Zuordnung konfiguriert",
+  "blocks.events.start.variables.configured": "{count} Variablen konfiguriert",
   "blocks.events.command.node.label": "Befehl"
 }
