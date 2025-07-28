@@ -1,24 +1,23 @@
+import type { BubbleBlockType } from "@typebot.io/blocks-bubbles/constants";
 import type { Block } from "@typebot.io/blocks-core/schemas/schema";
 import { IntegrationBlockType } from "@typebot.io/blocks-integrations/constants";
 import type { TEventWithOptions } from "@typebot.io/events/schemas";
 
+// Exclude BubbleBlockType.DATA since it doesn't have onboarding videos
 type Feature =
   | "editor"
   | "groupTitlesAutoGeneration"
-  | Block["type"]
+  | Exclude<Block["type"], BubbleBlockType.DATA>
   | TEventWithOptions["type"];
 
-export const onboardingVideos: Partial<
-  Record<
-    Feature,
-    | {
-        key: string;
-        youtubeId: string;
-        deployedAt?: Date;
-      }
-    | undefined
-  >
-> = {
+type OnboardingVideoData = {
+  key: string;
+  youtubeId: string;
+  deployedAt?: Date;
+};
+
+// Simple and clean - optional access handles undefined
+export const onboardingVideos: Record<string, OnboardingVideoData> = {
   editor: {
     key: "editor",
     youtubeId: "jp3ggg_42-M",
@@ -39,3 +38,5 @@ export const onboardingVideos: Partial<
     deployedAt: new Date("2024-06-04"),
   },
 };
+
+export type { Feature, OnboardingVideoData };

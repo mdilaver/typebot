@@ -1,7 +1,7 @@
 import { useDisclosure } from "@chakra-ui/react";
 import type { ForgedBlockDefinition } from "@typebot.io/forge-repository/definitions";
 import type { User } from "@typebot.io/user/schemas";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { onboardingVideos } from "../data";
 
 type Props = {
@@ -21,47 +21,47 @@ export const useOnboardingDisclosure = ({
   blockDef,
   isEnabled = true,
 }: Props) => {
-  const [isInitialized, setIsInitialized] = useState(false);
-  const { isOpen, onOpen, onClose, onToggle } = useDisclosure({
-    onOpen: () => {
-      if (!user || !key || user.displayedInAppNotifications?.[key]) return;
-      updateUser({
-        displayedInAppNotifications: {
-          ...user.displayedInAppNotifications,
-          [key]: true,
-        },
-      });
-    },
-  });
+  const { isOpen, onOpen, onClose: onCloseDisclosure } = useDisclosure();
+
+  const onClose = async () => {
+    onCloseDisclosure();
+    if (!user || !key || user.displayedInAppNotifications?.[key]) return;
+    await updateUser({
+      displayedInAppNotifications: {
+        ...user.displayedInAppNotifications,
+        [key]: true,
+      },
+    });
+  };
 
   useEffect(() => {
-    if (isInitialized || !user?.createdAt || !key || !isEnabled) return;
-    setIsInitialized(true);
+    if (!user || !key || !isEnabled) return;
+
+    const video = onboardingVideos[key];
+
     if (
-      key &&
-      (!onboardingVideos[key]?.deployedAt ||
+      video &&
+      (!video.deployedAt ||
         new Date(user.createdAt) >=
-          (onboardingVideos[key]
-            ? onboardingVideos[key]!.deployedAt
-            : (blockDef?.onboarding?.deployedAt ?? new Date()))) &&
+          (video.deployedAt ??
+            blockDef?.onboarding?.deployedAt ??
+            new Date())) &&
       user.displayedInAppNotifications?.[key] === undefined
     ) {
-      if (defaultOpenDelay) {
-        setTimeout(() => {
-          onOpen();
-        }, defaultOpenDelay);
-      } else {
+      const timeoutId = setTimeout(() => {
         onOpen();
-      }
+      }, defaultOpenDelay);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
   }, [
     blockDef?.onboarding?.deployedAt,
     defaultOpenDelay,
-    isInitialized,
     key,
     onOpen,
-    user?.createdAt,
-    user?.displayedInAppNotifications,
+    user,
     isEnabled,
   ]);
 

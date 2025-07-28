@@ -6,12 +6,13 @@ import {
   SlideFade,
   useColorModeValue,
 } from "@chakra-ui/react";
+import type { Feature } from "../data";
 import { onboardingVideos } from "../data";
 import { useOnboardingDisclosure } from "../hooks/useOnboardingDisclosure";
 import { YoutubeIframe } from "./YoutubeIframe";
 
 type Props = {
-  type: keyof typeof onboardingVideos;
+  type: Feature;
 };
 
 export const VideoOnboardingFloatingWindow = ({ type }: Props) => {
@@ -26,7 +27,8 @@ export const VideoOnboardingFloatingWindow = ({ type }: Props) => {
   const bgColor = useColorModeValue("white", "gray.950");
   const closeButtonColorScheme = useColorModeValue("blackAlpha", "gray");
 
-  if (!onboardingVideos[type]) return null;
+  const video = onboardingVideos[type];
+  if (!video) return null;
 
   return (
     <SlideFade
@@ -49,8 +51,7 @@ export const VideoOnboardingFloatingWindow = ({ type }: Props) => {
         aspectRatio="1.5"
         w="600px"
       >
-        <YoutubeIframe id={onboardingVideos[type]!.youtubeId} />
-
+        <YoutubeIframe id={video.youtubeId} />
         <IconButton
           icon={<CloseIcon />}
           aria-label={"Close"}

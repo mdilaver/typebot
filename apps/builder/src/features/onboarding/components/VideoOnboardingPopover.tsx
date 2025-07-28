@@ -12,12 +12,13 @@ import {
 } from "@chakra-ui/react";
 import type { ForgedBlockDefinition } from "@typebot.io/forge-repository/definitions";
 import type { ReactNode } from "react";
+import type { Feature } from "../data";
 import { onboardingVideos } from "../data";
 import { useOnboardingDisclosure } from "../hooks/useOnboardingDisclosure";
 import { YoutubeIframe } from "./YoutubeIframe";
 
 type Props = {
-  type: keyof typeof onboardingVideos;
+  type: Feature;
   isEnabled?: boolean;
   blockDef?: ForgedBlockDefinition;
   placement?: PlacementWithLogical;
@@ -32,8 +33,8 @@ const Root = ({
   placement = "right",
 }: Props): JSX.Element => {
   const { user, updateUser } = useUser();
-  const youtubeId =
-    onboardingVideos[type]?.youtubeId ?? blockDef?.onboarding?.youtubeId;
+  const video = onboardingVideos[type];
+  const youtubeId = video?.youtubeId ?? blockDef?.onboarding?.youtubeId;
   const { isOpen, onClose, onOpen } = useOnboardingDisclosure({
     key: type,
     updateUser,
